@@ -6,12 +6,12 @@
     <form method="post">
       {% csrf_token %}
       <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
+        <label for="exampleUsername" class="form-label">Username</label>
         <input
-          type="email"
+          type="text"
           class="form-control"
-          id="exampleInputEmail1"
-          aria-describedby="emailHelp"
+          aria-label="Username"
+          aria-describedby="basic-addon1"
         />
       </div>
       <div class="mb-3">
