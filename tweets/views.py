@@ -38,4 +38,7 @@ def logout_view(req):
     logout(req)
     messages.info(req, 'You have successfully logged out.')
     return redirect('home')
-            
+
+@login_required
+def create_tweet(req):
+    return render(req, 'tweets.html')
