@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import customLoginForm, customRegisterForm
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
@@ -24,12 +24,18 @@ def login_view(request):
 
 def register(req):
     form = customRegisterForm(req.POST or None)
-    if req.method == 'POST' and form.is_valid():
-        user = form.save()
-        login(req, user)
-        messages.success(req, 'Registration successful!')
-        return redirect('home')
-    else:
-        messages.error(req, 'Unsuccessful registration. Invalid information.')
-    return render(req, 'register.html', {'register_form': form})
+    if req.method == 'POST':
+        if form.is_valid():
+            user = form.save()
+            login(req, user)
+            messages.success(req, 'Registration successful!')
+            return redirect('home')
+        else:
+            messages.error(req, 'Unsuccessful registration. Invalid information.')
+    return render(req, 'register.html', {'form': form})
+
+def logout_view(req):
+    logout(req)
+    messages.info(req, 'You have successfully logged out.')
+    return redirect('home')
             
