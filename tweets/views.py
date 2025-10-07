@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 # Create your views here.
+@login_required
 def home(req):
     return render(req, 'home.html')
 
@@ -18,7 +19,6 @@ def login_view(request):
         return redirect('home')
     elif request.method == 'POST':
         messages.error(request, 'Invalid username or password.')
-
     return render(request, 'login.html', {'form': form})
 
 
@@ -37,8 +37,5 @@ def register(req):
 def logout_view(req):
     logout(req)
     messages.info(req, 'You have successfully logged out.')
-    return redirect('home')
+    return redirect('login')
 
-@login_required
-def create_tweet(req):
-    return render(req, 'tweets.html')
