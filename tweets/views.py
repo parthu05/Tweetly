@@ -39,3 +39,7 @@ def logout_view(req):
     messages.info(req, 'You have successfully logged out.')
     return redirect('login')
 
+@login_required
+def create_tweet(req):
+    return render(req, 'tweetForm.html')
+
