@@ -1,35 +1,10 @@
 {%extends 'navbar.html'%} {% block content %}
 
-<div class="input-group flex-nowrap mb-4">
-  <input
-    type="text"
-    class="form-control"
-    placeholder="Title"
-    aria-label="Username"
-    aria-describedby="addon-wrapping"
-  />
-</div>
+<h2>Create Tweet</h2>
 
-<div class="input-group mb-4">
-  <input
-    type="file"
-    class="form-control"
-    id="inputGroupFile04"
-    aria-describedby="inputGroupFileAddon04"
-    aria-label="Upload"
-  />
-  <button
-    class="btn btn-outline-secondary"
-    type="button"
-    id="inputGroupFileAddon04"
-  >
-    Button
-  </button>
-</div>
-
-<div class="input-group mb-4">
-  <span class="input-group-text">Description</span>
-  <textarea class="form-control" aria-label="With textarea"></textarea>
-</div>
+<form enctype="multipart/form-data" method="post">
+  {% csrf_token %} {{ form.as_p }}
+  <button type="submit" class="btn btn-primary">Create Tweet</button>
+</form>
 
 {%endblock%}

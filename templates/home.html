@@ -6,4 +6,22 @@
 <p>
   Please <a href="{% url 'login' %}">log in</a> to create and view your tweets.
 </p>
-{% endif %} {% endblock %}
+
+<h2>Tweets</h2>
+{% for tweet in tweets %}
+<div class="card mb-3">
+  <div class="card-body">
+    <h5 class="card-title">{{ tweet.title }}</h5>
+    <h6 class="card-subtitle mb-2 text-muted">
+      by {{ tweet.user.username }} on {{ tweet.created_at }}
+    </h6>
+    <p class="card-text">{{ tweet.content }}</p>
+    {% if tweet.photo %}
+    <img src="{{ tweet.photo.url }}" class="img-fluid" alt="Tweet Photo" />
+    {% endif %}
+    <small class="text-muted">{{ tweet.created_at }}</small>
+  </div>
+</div>
+{% empty %}
+<p>No tweets available.</p>
+{% endfor %} {% endif %} {% endblock %}

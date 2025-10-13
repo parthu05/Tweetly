@@ -1,5 +1,5 @@
 from django.shortcuts import render,redirect
-from .forms import customLoginForm, customRegisterForm
+from .forms import customLoginForm, customRegisterForm, TweetForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -7,6 +7,9 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def home(req):
+    tweets = req.user.tweet_set.all().order_by('-created_at')
+    if tweets.exists():
+        return render(req, 'home.html', {'tweets': tweets})
     return render(req, 'home.html')
 
 def login_view(request):
@@ -41,5 +44,16 @@ def logout_view(req):
 
 @login_required
 def create_tweet(req):
-    return render(req, 'tweetForm.html')
+    if req.method == 'POST':
+        form = TweetForm(req.POST, req.FILES)
+        if form.is_valid():
+            tweet = form.save(commit=False)
+            tweet.user = req.user
+            tweet.save()
+            messages.success(req, 'Tweet created successfully!')
+            return redirect('home')
+        else:
+            form = TweetForm()
+            messages.error(req, 'Error creating tweet. Please check the form.')
+    return render(req, 'tweetForm.html',{ 'form': TweetForm() })
 
