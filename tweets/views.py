@@ -8,9 +8,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def home(req):
     tweets = req.user.tweet_set.all().order_by('-created_at')
-    if tweets.exists():
-        return render(req, 'home.html', {'tweets': tweets})
-    return render(req, 'home.html')
+    return render(req, 'home.html', {'tweets': tweets})
 
 def login_view(request):
     form = customLoginForm(request, data=request.POST or None)
@@ -51,7 +49,7 @@ def create_tweet(req):
             tweet.user = req.user
             tweet.save()
             messages.success(req, 'Tweet created successfully!')
-            return redirect('home')
+            return render(req, 'tweetForm.html', { 'form': form })
         else:
             form = TweetForm()
             messages.error(req, 'Error creating tweet. Please check the form.')
