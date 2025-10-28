@@ -1,0 +1,29 @@
+{% extends 'navbar.html' %} {% block content %}
+
+<h2>My Tweets</h2>
+<div class="row justify-content-left g-4">
+  {% for tweet in tweets %}
+  <div class="col-12 col-sm-10 col-md-6 col-lg-4 col-xl-3">
+    <div class="card h-100 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title">{{ tweet.title }}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">
+          by {{ tweet.user.username }}
+        </h6>
+        {% if tweet.photo %}
+        <img src="{{ tweet.photo.url }}" class="img-fluid" alt="Tweet Photo" />
+        {% endif %}
+        <p class="card-text">{{ tweet.content }}</p>
+      </div>
+      <div class="card-footer text-muted">
+        <strong>created at:</strong> {{ tweet.created_at }}
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12 col-md-8 col-lg-6">
+    <p>No tweets available.</p>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
