@@ -1,6 +1,10 @@
-from django.shortcuts import render,redirect
-from .forms import customLoginForm, customRegisterForm, TweetForm
-from .models import Tweet
+from typing import Any
+
+
+from django.shortcuts import render,redirect, get_object_or_404
+from django.views.decorators.http import require_POST
+from .forms import customLoginForm, customRegisterForm, TweetForm, CommentForm
+from .models import Tweet, Like, Comment
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -8,8 +12,19 @@ from django.contrib.auth.decorators import login_required
 # Create your views here.
 @login_required
 def home(req):
-    tweets = Tweet.objects.select_related('user').order_by('-created_at')
-    return render(req, 'home.html', {'tweets': tweets})
+    tweets = (
+        Tweet.objects.select_related('user')
+        .prefetch_related('likes', 'comments', 'comments__user')
+        .order_by('-created_at')
+    )
+    liked_tweet_ids = set[Any](
+        Like.objects.filter(user=req.user, tweet__in=tweets).values_list('tweet_id', flat=True)
+    )
+    return render(req, 'home.html', {
+        'tweets': tweets,
+        'liked_tweet_ids': liked_tweet_ids,
+        'comment_form': CommentForm(),
+    })
 
 @login_required
 def my_tweets(req):
@@ -59,4 +74,29 @@ def create_tweet(req):
         messages.error(req, 'Error creating tweet. Please check the form.')
         return render(req, 'tweetForm.html', { 'form': form })
     return render(req, 'tweetForm.html', { 'form': TweetForm() })
+
+
+@login_required
+@require_POST
+def like_toggle(req, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    like, created = Like.objects.get_or_create(tweet=tweet, user=req.user)
+    if not created:
+        like.delete()
+    return redirect('home')
+
+
+@login_required
+@require_POST
+def add_comment(req, tweet_id):
+    tweet = get_object_or_404(Tweet, id=tweet_id)
+    form = CommentForm(req.POST)
+    if form.is_valid():
+        comment: Comment = form.save(commit=False)
+        comment.tweet = tweet
+        comment.user = req.user
+        comment.save()
+        return redirect('home')
+    messages.error(req, 'Could not add comment')
+    return redirect('home')
 
